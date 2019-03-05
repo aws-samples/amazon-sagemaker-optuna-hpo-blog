@@ -18,12 +18,11 @@ import base64
 import ast
 from botocore.exceptions import ClientError
 
-def get_secret(secret_name, region_name = "us-east-2"):
+def get_secret(secret_name):
     # Create a Secrets Manager client
     session = boto3.session.Session()
     client = session.client(
-        service_name='secretsmanager',
-        region_name=region_name
+        service_name='secretsmanager'
     )
 
     try:
