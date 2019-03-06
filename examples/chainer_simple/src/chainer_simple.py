@@ -155,6 +155,7 @@ if __name__ == '__main__':
     parser.add_argument('--train', type=str, default=os.environ['SM_CHANNEL_TRAIN'])
     parser.add_argument('--test', type=str, default=os.environ['SM_CHANNEL_TEST'])
     parser.add_argument('--training-env', type=str, default=json.loads(os.environ['SM_TRAINING_ENV']))
+    parser.add_argument('--region-name', type=str, default='us-east-1')
     
     args, _ = parser.parse_known_args()
     
@@ -175,7 +176,7 @@ if __name__ == '__main__':
     
     # Define an Optuna study. 
     import optuna
-    secret = get_secret(args.db_secret)
+    secret = get_secret(args.db_secret, args.region_name)
     connector = 'mysqlconnector'
     db = 'mysql+{}://{}:{}@{}/{}'.format(connector, secret['username'], secret['password'], args.host, args.db_name)
     
