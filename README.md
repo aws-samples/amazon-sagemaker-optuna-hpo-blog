@@ -1,4 +1,4 @@
-## AWS SageMaker Optuna HPO Blog
+## Amazon SageMaker Optuna HPO Blog
 
 This sample code demonstrates how to build an Amazon SageMaker environment for HPO using [Optuna](https://github.com/pfnet/optuna) (an open source hyperparameter tuning framework).
 
