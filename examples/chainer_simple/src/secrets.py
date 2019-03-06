@@ -23,7 +23,7 @@ def get_secret(secret_name):
     session = boto3.session.Session()
     client = session.client(
         service_name='secretsmanager', 
-        session.region_name
+        region_name=session.region_name
     )
 
     try:
