@@ -178,7 +178,7 @@ if __name__ == '__main__':
     connector = 'mysqlconnector'
     db = 'mysql+{}://{}:{}@{}/{}'.format(connector, secret['username'], secret['password'], args.host, args.db_name)
     
-    study = optuna.load_study(study_name=args.study_name, storage=db)
+    study = optuna.study.load_study(study_name=args.study_name, storage=db)
     study.optimize(objective, n_trials=args.n_trials)
 
     print('Number of finished trials: ', len(study.trials))
