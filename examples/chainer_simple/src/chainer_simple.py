@@ -105,12 +105,10 @@ def objective(trial):
         trial.set_user_attr(key, value)
         
     trial.set_user_attr('job_name', args.training_env['job_name'])
-    serializers.save_npz(os.path.join('/tmp', 'model_{}.npz'.format(trial.trial_id)), model)
+    serializers.save_npz(os.path.join('/tmp', 'model_{}.npz'.format(trial.number)), model)
     
-
-    # Return the validation error
-    val_err = 1.0 - log_report_extension.log[-1]['validation/main/accuracy']
-    return val_err
+    # Return the validation accuracy
+    return log_report_extension.log[-1]['validation/main/accuracy']
 
 def model_fn(model_dir):
     """
@@ -180,7 +178,7 @@ if __name__ == '__main__':
     connector = 'mysqlconnector'
     db = 'mysql+{}://{}:{}@{}/{}'.format(connector, secret['username'], secret['password'], args.host, args.db_name)
     
-    study = optuna.Study(study_name=args.study_name, storage=db)
+    study = optuna.load_study(study_name=args.study_name, storage=db)
     study.optimize(objective, n_trials=args.n_trials)
 
     print('Number of finished trials: ', len(study.trials))
@@ -201,7 +199,7 @@ if __name__ == '__main__':
     # resave the best model
     try: 
         model = L.Classifier(load_model(trial.params))
-        serializers.load_npz(os.path.join('/tmp', 'model_{}.npz'.format(trial.trial_id)), model)
+        serializers.load_npz(os.path.join('/tmp', 'model_{}.npz'.format(trial.number)), model)
         serializers.save_npz(os.path.join(model_dir, 'model.npz'), model)        
         np.savez(os.path.join(model_dir, 'params.npz'), trial.params)
         
