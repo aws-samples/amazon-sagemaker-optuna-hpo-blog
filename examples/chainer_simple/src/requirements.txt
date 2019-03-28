@@ -1,2 +1,2 @@
-mysql-connector-python >= 8.0.13
-optuna >= 0.7.0
+mysql-connector-python >= 8.0.15
+optuna >= 0.9.0

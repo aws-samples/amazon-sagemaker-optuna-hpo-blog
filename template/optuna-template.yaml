@@ -397,8 +397,7 @@ Resources:
       SubnetId: !Ref PublicSubnet1
       SecurityGroupIds:
         - !Ref SageMakerSecurityGroup
-      # [TODO] Enable after the repository becomes public
-      # LifecycleConfigName: !GetAtt NotebookLifecycleConfig.NotebookInstanceLifecycleConfigName
+      LifecycleConfigName: !GetAtt NotebookLifecycleConfig.NotebookInstanceLifecycleConfigName
     Metadata:
       'AWS::CloudFormation::Designer':
         id: c90fd14b-d872-4e50-a56f-8675da88eeb2
