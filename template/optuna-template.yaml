@@ -440,7 +440,7 @@ Resources:
     Properties:
       NotebookInstanceLifecycleConfigName: clone-optuna-sample-repository
       OnCreate:
-        - Content: IyEvYmluL2Jhc2gKc3VkbyAtdSBlYzItdXNlciAtaSA8PCdFT0YnCmNkIFNhZ2VNYWtlciAmJiBnaXQgY2xvbmUgaHR0cHM6Ly9naXRodWIuY29tL2F3cy1zYW1wbGVzL2F3cy1zYWdlbWFrZXItb3B0dW5hLWhwby1ibG9nLmdpdApFT0Y=
+        - Content: IyEvYmluL2Jhc2gKc3VkbyAtdSBlYzItdXNlciAtaSA8PCdFT0YnCmNkIFNhZ2VNYWtlciAmJiBnaXQgY2xvbmUgaHR0cHM6Ly9naXRodWIuY29tL2F3cy1zYW1wbGVzL2FtYXpvbi1zYWdlbWFrZXItb3B0dW5hLWhwby1ibG9nLmdpdApFT0Y=
 Outputs:
   VPC:
     Description: A reference to the created VPC
