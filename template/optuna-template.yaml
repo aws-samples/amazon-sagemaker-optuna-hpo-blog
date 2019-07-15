@@ -323,7 +323,7 @@ Resources:
       DBClusterIdentifier: !Ref DBClusterName
       DBSubnetGroupName: !Ref DBSubnetGroup
       VpcSecurityGroupIds:
-        - !GetAtt DBSecurityGroup.GroupId
+        - !GetAtt RDSSecurityGroup.GroupId
       Port: !Ref DBPort
     Metadata:
       'AWS::CloudFormation::Designer':
@@ -363,7 +363,7 @@ Resources:
         - DBParameterGroupMap
         - !Ref DBEngine
         - DefaultParameterGroup
-  DBSecurityGroup:
+  RDSSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
       GroupDescription: RDS security group
