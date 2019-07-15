@@ -303,15 +303,6 @@ Resources:
     Metadata:
       'AWS::CloudFormation::Designer':
         id: a3f7896e-c62e-4ca9-ba10-0fbe25922957
-  NoIngressSecurityGroup:
-    Type: 'AWS::EC2::SecurityGroup'
-    Properties:
-      GroupName: no-ingress-sg
-      GroupDescription: Security group with no ingress rule
-      VpcId: !Ref VPC
-    Metadata:
-      'AWS::CloudFormation::Designer':
-        id: e34decf8-8e02-460e-a9cb-365d06a310e5
   DBCluster:
     Type: 'AWS::RDS::DBCluster'
     Properties:
@@ -469,9 +460,6 @@ Outputs:
   PrivateSubnet2:
     Description: A reference to the private subnet in the 2nd Availability Zone
     Value: !Ref PrivateSubnet2
-  NoIngressSecurityGroup:
-    Description: Security group with no ingress rule
-    Value: !Ref NoIngressSecurityGroup
   SageMakerSecurityGroup:
     Description: Security group for SageMaker Notebook instance / Training contianer
     Value: !Ref SageMakerSecurityGroup
