@@ -303,6 +303,11 @@ Resources:
     Metadata:
       'AWS::CloudFormation::Designer':
         id: a3f7896e-c62e-4ca9-ba10-0fbe25922957
+  PublicNACL:
+      Type: AWS::EC2::NetworkAcl
+      Properties:
+         VpcId:
+           Ref: VPC
   PublicIngressACLHTTPEntry:
       Type: AWS::EC2::NetworkAclEntry
       Properties:
@@ -401,25 +406,20 @@ Resources:
          RuleAction: deny
          Egress: 'true'
          CidrBlock: 0.0.0.0/0
-  PublicNACL:
-      Type: AWS::EC2::NetworkAcl
-      Properties:
-         VpcId:
-           Ref: !Ref VPC
   PublicSubnet1NetworkAclAssociation:
      Type: AWS::EC2::SubnetNetworkAclAssociation
      Properties:
        SubnetId:
-         Ref: !Ref PublicSubnet1
+         Ref: PublicSubnet1
        NetworkAclId:
-         Ref: !Ref PublicNACL
+         Ref: PublicNACL
   PublicSubnet2NetworkAclAssociation:
      Type: AWS::EC2::SubnetNetworkAclAssociation
      Properties:
        SubnetId:
-         Ref: !Ref PublicSubnet2
+         Ref: PublicSubnet2
        NetworkAclId:
-         Ref: !Ref PublicNACL
+         Ref: PublicNACL
   DBCluster:
     Type: 'AWS::RDS::DBCluster'
     Properties:
