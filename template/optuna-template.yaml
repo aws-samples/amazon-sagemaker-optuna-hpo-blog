@@ -343,7 +343,7 @@ Resources:
          Protocol: "6"
          RuleAction: allow
          Egress: 'false'
-         CidrBlock: 0.0.0.0/0
+         CidrBlock: !Ref VpcCIDR
          PortRange:
             From: '32768'
             To: '65535'
