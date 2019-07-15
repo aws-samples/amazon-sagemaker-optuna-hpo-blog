@@ -334,16 +334,6 @@ Resources:
          PortRange:
             From: '443'
             To: '443'
-  PublicIngressACLDeny:
-      Type: AWS::EC2::NetworkAclEntry
-      Properties:
-         NetworkAclId:
-            Ref: PublicNACL
-         RuleNumber: '999'
-         Protocol: "-1"
-         RuleAction: deny
-         Egress: 'false'
-         CidrBlock: 0.0.0.0/0
   PublicEgressACLHTTPEntry:
       Type: AWS::EC2::NetworkAclEntry
       Properties:
@@ -396,16 +386,6 @@ Resources:
          PortRange:
             From: !Ref DBPort
             To: !Ref DBPort
-  PublicEgressACLDeny:
-      Type: AWS::EC2::NetworkAclEntry
-      Properties:
-         NetworkAclId:
-            Ref: PublicNACL
-         RuleNumber: '999'
-         Protocol: "-1"
-         RuleAction: deny
-         Egress: 'true'
-         CidrBlock: 0.0.0.0/0
   PublicSubnet1NetworkAclAssociation:
      Type: AWS::EC2::SubnetNetworkAclAssociation
      Properties:
