@@ -334,6 +334,19 @@ Resources:
          PortRange:
             From: '443'
             To: '443'
+  PublicIngressACLEphemeralPortEntry:
+      Type: AWS::EC2::NetworkAclEntry
+      Properties:
+         NetworkAclId:
+            Ref: PublicNACL
+         RuleNumber: '140'
+         Protocol: "6"
+         RuleAction: allow
+         Egress: 'false'
+         CidrBlock: 0.0.0.0/0
+         PortRange:
+            From: '32768'
+            To: '65535'
   PublicEgressACLHTTPEntry:
       Type: AWS::EC2::NetworkAclEntry
       Properties:
