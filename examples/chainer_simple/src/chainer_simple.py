@@ -192,6 +192,6 @@ if __name__ == '__main__':
         serializers.save_npz(os.path.join(model_dir, 'model.npz'), model)        
         np.savez(os.path.join(model_dir, 'params.npz'), trial.params)
         
-        print('    Saved:')
+        print('    Model saved:', 'model_{}.npz'.format(trial.number))
     except Exception as e: 
         print('    Save failed:', e)
