@@ -185,6 +185,7 @@ if __name__ == '__main__':
         print('    {}: {}'.format(key, value))
 
     # resave the best model
+    from optuna.trial import FixedTrial
     try:
         model = L.Classifier(create_model(FixedTrial(trial.params)))
         serializers.load_npz(os.path.join('/tmp', 'model_{}.npz'.format(trial.number)), model)
