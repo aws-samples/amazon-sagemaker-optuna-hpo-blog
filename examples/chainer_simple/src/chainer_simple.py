@@ -138,7 +138,6 @@ if __name__ == '__main__':
     parser.add_argument('--n-trials', type=int, default=10)
 
     # Data, model, and output directories These are required.
-    parser.add_argument('--output-dir', type=str, default=os.environ['SM_OUTPUT_DIR'])
     parser.add_argument('--model-dir', type=str, default=os.environ['SM_MODEL_DIR'])
     parser.add_argument('--train', type=str, default=os.environ['SM_CHANNEL_TRAIN'])
     parser.add_argument('--test', type=str, default=os.environ['SM_CHANNEL_TEST'])
@@ -159,7 +158,6 @@ if __name__ == '__main__':
     train = chainer.datasets.TupleDataset(train_data, train_labels)
     test = chainer.datasets.TupleDataset(test_data, test_labels)
 
-    output_dir = args.output_dir
     model_dir = args.model_dir
     
     # Define an Optuna study. 
@@ -187,12 +185,12 @@ if __name__ == '__main__':
         print('    {}: {}'.format(key, value))
 
     # resave the best model
-    try: 
-        model = L.Classifier(load_model(trial.params))
+    try:
+        model = L.Classifier(create_model(FixedTrial(trial.params)))
         serializers.load_npz(os.path.join('/tmp', 'model_{}.npz'.format(trial.number)), model)
         serializers.save_npz(os.path.join(model_dir, 'model.npz'), model)        
         np.savez(os.path.join(model_dir, 'params.npz'), trial.params)
         
         print('    Saved:')
-    except: 
-        print('    Save failed.')
+    except Exception as e: 
+        print('    Save failed:', e)
