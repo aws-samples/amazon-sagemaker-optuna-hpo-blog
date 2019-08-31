@@ -48,18 +48,6 @@ def create_model(trial):
 
     return chainer.Sequential(*layers)
 
-def load_model(params):
-    n_layers = params['n_layers'] 
-
-    layers = []
-    for i in range(n_layers):
-        n_units = int(params['n_units_l{}'.format(i)])
-        layers.append(L.Linear(None, n_units))
-        layers.append(F.relu)
-    layers.append(L.Linear(None, 10))
-
-    return chainer.Sequential(*layers)
-
 def create_optimizer(trial, model):
     # We optimize the choice of optimizers as well as their parameters.
     optimizer_name = trial.suggest_categorical('optimizer', ['Adam', 'MomentumSGD'])
@@ -130,9 +118,11 @@ def model_fn(model_dir):
     https://github.com/aws/sagemaker-chainer-containers
     """
     
+    from optuna.trial import FixedTrial
+    
     chainer.config.train = False
     params = np.load(os.path.join(model_dir, 'params.npz'))['arr_0'].item()
-    model = L.Classifier(load_model(params))
+    model = L.Classifier(create_model(FixedTrial(params)))
     serializers.load_npz(os.path.join(model_dir, 'model.npz'), model)
     return model.predictor
 
