@@ -29,6 +29,9 @@ import torch.utils.data
 from torchvision import datasets
 from torchvision import transforms
 
+import argparse
+from secrets import get_secret
+
 import optuna
 
 DEVICE = torch.device("cpu")
@@ -129,8 +132,20 @@ def objective(trial):
 
 
 if __name__ == "__main__":
-    study = optuna.create_study(direction="maximize")
-    study.optimize(objective, n_trials=100)
+    parser = argparse.ArgumentParser()
+
+    # for HPO
+    parser.add_argument('--host', type=str)
+    parser.add_argument('--db-name', type=str, default='optuna')
+    parser.add_argument('--db-secret', type=str, default='demo/optuna/db')
+    parser.add_argument('--study-name', type=str, default='chainer-simple')
+    parser.add_argument('--n-trials', type=int, default=10)
+    secret = get_secret(args.db_secret, args.region_name)
+    connector = 'mysqlconnector'
+    db = 'mysql+{}://{}:{}@{}/{}'.format(connector, secret['username'], secret['password'], args.host, args.db_name)
+
+    study = optuna.study.load_study(study_name=args.study_name, storage=db)
+    study.optimize(objective, n_trials=args.n_trials)
 
     print("Number of finished trials: ", len(study.trials))
 
