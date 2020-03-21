@@ -113,6 +113,8 @@ def objective(trial):
             # Updating the weights.
             optimizer.step()
 
+    save_model(model, args.model_dir, trial.number)
+    
     # Validation of the model.
     model.eval()
     correct = 0
@@ -129,6 +131,11 @@ def objective(trial):
     accuracy = correct / N_TEST_EXAMPLES
     return accuracy
 
+def save_model(model, model_dir, trial_number):
+    logger.info("Saving the model.")
+    path = os.path.join(model_dir, 'model_{}.pth'.format(trial_number))
+    # recommended way from http://pytorch.org/docs/master/notes/serialization.html
+    torch.save(model.cpu().state_dict(), path)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
