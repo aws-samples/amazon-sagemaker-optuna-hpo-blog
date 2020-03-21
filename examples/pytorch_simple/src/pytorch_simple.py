@@ -37,7 +37,7 @@ import optuna
 DEVICE = torch.device("cpu")
 BATCHSIZE = 128
 CLASSES = 10
-DIR = os.getcwd()
+# DIR = os.getcwd()
 EPOCHS = 10
 LOG_INTERVAL = 10
 N_TRAIN_EXAMPLES = BATCHSIZE * 30
@@ -64,15 +64,15 @@ def define_model(trial):
     return nn.Sequential(*layers)
 
 
-def get_mnist():
+def get_mnist(args):
     # Load MNIST dataset.
     train_loader = torch.utils.data.DataLoader(
-        datasets.MNIST(DIR, train=True, download=True, transform=transforms.ToTensor()),
+        datasets.MNIST(args.train, train=True, transform=transforms.ToTensor()),
         batch_size=BATCHSIZE,
         shuffle=True,
     )
     test_loader = torch.utils.data.DataLoader(
-        datasets.MNIST(DIR, train=False, transform=transforms.ToTensor()),
+        datasets.MNIST(args.train, train=False, transform=transforms.ToTensor()),
         batch_size=BATCHSIZE,
         shuffle=True,
     )
@@ -91,7 +91,7 @@ def objective(trial):
     optimizer = getattr(optim, optimizer_name)(model.parameters(), lr=lr)
 
     # Get the MNIST dataset.
-    train_loader, test_loader = get_mnist()
+    train_loader, test_loader = get_mnist(args)
 
     # Training of the model.
     model.train()
@@ -140,6 +140,16 @@ if __name__ == "__main__":
     parser.add_argument('--db-secret', type=str, default='demo/optuna/db')
     parser.add_argument('--study-name', type=str, default='chainer-simple')
     parser.add_argument('--n-trials', type=int, default=10)
+    
+    # Data, model, and output directories These are required.
+    parser.add_argument('--model-dir', type=str, default=os.environ['SM_MODEL_DIR'])
+    parser.add_argument('--train', type=str, default=os.environ['SM_CHANNEL_TRAIN'])
+#     parser.add_argument('--test', type=str, default=os.environ['SM_CHANNEL_TEST'])
+#     parser.add_argument('--training-env', type=str, default=json.loads(os.environ['SM_TRAINING_ENV']))
+    parser.add_argument('--region-name', type=str, default='us-east-1')
+    
+    args, _ = parser.parse_known_args()    
+
     secret = get_secret(args.db_secret, args.region_name)
     connector = 'mysqlconnector'
     db = 'mysql+{}://{}:{}@{}/{}'.format(connector, secret['username'], secret['password'], args.host, args.db_name)
