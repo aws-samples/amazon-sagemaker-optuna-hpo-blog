@@ -6,17 +6,8 @@ PyTorch and MNIST. We optimize the neural network architecture as well as the op
 configuration. As it is too time consuming to use the whole MNIST dataset, we here use a small
 subset of it.
 
-We have the following two ways to execute this example:
-
-(1) Execute this code directly.
-    $ python pytorch_simple.py
-
-
-(2) Execute through CLI.
-    $ STUDY_NAME=`optuna create-study --direction maximize --storage sqlite:///example.db`
-    $ optuna study optimize pytorch_simple.py objective --n-trials=100 --study $STUDY_NAME \
-      --storage sqlite:///example.db
-
+Modified to run on Amazon SageMaker. The original version is here: 
+https://github.com/optuna/optuna/blob/master/examples/pytorch_simple.py
 """
 
 import os
@@ -134,6 +125,9 @@ def objective(trial):
             correct += pred.eq(target.view_as(pred)).sum().item()
 
     accuracy = correct / N_TEST_EXAMPLES
+    
+    trial.set_user_attr('accuracy', accuracy)
+    trial.set_user_attr('job_name', args.training_env['job_name'])
     return accuracy
 
 def model_fn(model_dir):
@@ -162,6 +156,7 @@ if __name__ == "__main__":
     # Data, model, and output directories These are required.
     parser.add_argument('--model-dir', type=str, default=os.environ['SM_MODEL_DIR'])
     parser.add_argument('--data-dir', type=str, default=os.environ['SM_CHANNEL_TRAINING'])
+    parser.add_argument('--training-env', type=str, default=json.loads(os.environ['SM_TRAINING_ENV']))
     parser.add_argument('--region-name', type=str, default='us-east-1')
     
     args, _ = parser.parse_known_args()    
