@@ -30,6 +30,8 @@ from torchvision import datasets
 from torchvision import transforms
 
 import argparse
+import logging
+import sys
 from secrets import get_secret
 
 import optuna
@@ -42,6 +44,9 @@ LOG_INTERVAL = 10
 N_TRAIN_EXAMPLES = BATCHSIZE * 30
 N_TEST_EXAMPLES = BATCHSIZE * 10
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+logger.addHandler(logging.StreamHandler(sys.stdout))
 
 def define_model(trial):
     # We optimize the number of layers, hidden untis and dropout ratio in each layer.
