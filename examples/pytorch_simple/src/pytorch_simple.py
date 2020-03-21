@@ -34,7 +34,7 @@ from secrets import get_secret
 
 import optuna
 
-DEVICE = torch.device("cpu")
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 BATCHSIZE = 128
 CLASSES = 10
 EPOCHS = 10
@@ -140,7 +140,7 @@ def model_fn(model_dir):
 
 def save_model(model, model_dir, trial_number):
     logger.info("Saving the model.")
-    path = os.path.join(model_dir, 'model_{}.pth'.format(trial_number))
+    path = os.path.join(model_dir, '/tmp/model_{}.pth'.format(trial_number))
     # recommended way from http://pytorch.org/docs/master/notes/serialization.html
     torch.save(model.cpu().state_dict(), path)
 
@@ -178,3 +178,9 @@ if __name__ == "__main__":
     print("  Params: ")
     for key, value in trial.params.items():
         print("    {}: {}".format(key, value))
+    
+    try:
+        os.rename('/tmp/model_{}.pth'.format(trial.number), os.path.join(model_dir, 'model.pth'))
+        print('    Model saved:', 'model_{}.npz'.format(trial.number))
+    except Exception as e: 
+        print('    Save failed:', e)
