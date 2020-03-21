@@ -131,6 +131,13 @@ def objective(trial):
     accuracy = correct / N_TEST_EXAMPLES
     return accuracy
 
+def model_fn(model_dir):
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model = torch.nn.DataParallel(Net())
+    with open(os.path.join(model_dir, 'model.pth'), 'rb') as f:
+        model.load_state_dict(torch.load(f))
+    return model.to(device)
+
 def save_model(model, model_dir, trial_number):
     logger.info("Saving the model.")
     path = os.path.join(model_dir, 'model_{}.pth'.format(trial_number))
