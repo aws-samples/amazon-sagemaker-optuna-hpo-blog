@@ -10,8 +10,6 @@ Modified to run on Amazon SageMaker. The original version is here:
 https://github.com/optuna/optuna/blob/master/examples/pytorch_simple.py
 """
 
-import os
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -20,6 +18,8 @@ import torch.utils.data
 from torchvision import datasets
 from torchvision import transforms
 
+import os
+import json
 import argparse
 import logging
 import sys
@@ -109,7 +109,7 @@ def objective(trial):
             # Updating the weights.
             optimizer.step()
 
-    save_model(model, args.model_dir, trial.number)
+    save_model(model, '/tmp', trial.number)
     
     # Validation of the model.
     model.eval()
@@ -139,7 +139,7 @@ def model_fn(model_dir):
 
 def save_model(model, model_dir, trial_number):
     logger.info("Saving the model.")
-    path = os.path.join(model_dir, '/tmp/model_{}.pth'.format(trial_number))
+    path = os.path.join(model_dir, 'model_{}.pth'.format(trial_number))
     # recommended way from http://pytorch.org/docs/master/notes/serialization.html
     torch.save(model.cpu().state_dict(), path)
 
@@ -178,9 +178,15 @@ if __name__ == "__main__":
     print("  Params: ")
     for key, value in trial.params.items():
         print("    {}: {}".format(key, value))
-    
+    # retrieve and save the best model
+    from optuna.trial import FixedTrial
     try:
-        os.rename('/tmp/model_{}.pth'.format(trial.number), os.path.join(model_dir, 'model.pth'))
+        model = define_model(FixedTrial(trial.params)).to(DEVICE)
+        with open(os.path.join('/tmp', 'model_{}.pth'.format(trial.number)), 'rb') as f:
+            model.load_state_dict(torch.load(f))
+            
+        path = os.path.join(args.model_dir, 'model.pth')
+        torch.save(model.cpu().state_dict(), path)
         print('    Model saved:', 'model_{}.npz'.format(trial.number))
     except Exception as e: 
         print('    Save failed:', e)
