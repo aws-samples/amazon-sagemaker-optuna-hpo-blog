@@ -132,6 +132,7 @@ def objective(trial):
     return accuracy
 
 def model_fn(model_dir):
+    from optuna.trial import FixedTrial
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     params = torch.load(os.path.join(model_dir, 'params.pth'))
     model = define_model(FixedTrial(params)).to(device)
