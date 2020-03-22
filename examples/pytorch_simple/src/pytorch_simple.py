@@ -10,6 +10,7 @@ Modified to run on Amazon SageMaker. The original version is here:
 https://github.com/optuna/optuna/blob/master/examples/pytorch_simple.py
 """
 
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -132,7 +133,8 @@ def objective(trial):
 
 def model_fn(model_dir):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = torch.nn.DataParallel(Net())
+    params = torch.load(os.path.join(model_dir, 'params.pth'))
+    model = define_model(FixedTrial(params)).to(device)
     with open(os.path.join(model_dir, 'model.pth'), 'rb') as f:
         model.load_state_dict(torch.load(f))
     return model.to(device)
@@ -156,6 +158,7 @@ if __name__ == "__main__":
     # Data, model, and output directories These are required.
     parser.add_argument('--model-dir', type=str, default=os.environ['SM_MODEL_DIR'])
     parser.add_argument('--data-dir', type=str, default=os.environ['SM_CHANNEL_TRAINING'])
+#     parser.add_argument('--test-data', type=str, default=os.environ['SM_CHANNEL_TEST'])
     parser.add_argument('--training-env', type=str, default=json.loads(os.environ['SM_TRAINING_ENV']))
     parser.add_argument('--region-name', type=str, default='us-east-1')
     
@@ -178,6 +181,7 @@ if __name__ == "__main__":
     print("  Params: ")
     for key, value in trial.params.items():
         print("    {}: {}".format(key, value))
+        
     # retrieve and save the best model
     from optuna.trial import FixedTrial
     try:
@@ -187,6 +191,7 @@ if __name__ == "__main__":
             
         path = os.path.join(args.model_dir, 'model.pth')
         torch.save(model.cpu().state_dict(), path)
+        torch.save(trial.params, os.path.join(model_dir, 'params.pth'))
         print('    Model saved:', 'model_{}.npz'.format(trial.number))
     except Exception as e: 
         print('    Save failed:', e)
