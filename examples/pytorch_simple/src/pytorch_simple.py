@@ -191,7 +191,7 @@ if __name__ == "__main__":
             
         path = os.path.join(args.model_dir, 'model.pth')
         torch.save(model.cpu().state_dict(), path)
-        torch.save(trial.params, os.path.join(model_dir, 'params.pth'))
+        torch.save(trial.params, os.path.join(args.model_dir, 'params.pth'))
         print('    Model saved:', 'model_{}.npz'.format(trial.number))
     except Exception as e: 
         print('    Save failed:', e)
