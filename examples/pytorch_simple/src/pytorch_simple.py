@@ -141,7 +141,7 @@ def model_fn(model_dir):
     return model.to(device)
 
 def save_model(model, model_dir, trial_number):
-    logger.info("Saving the model.")
+    logger.info("Saving the model_{}.".format(trial_number))
     path = os.path.join(model_dir, 'model_{}.pth'.format(trial_number))
     # recommended way from http://pytorch.org/docs/master/notes/serialization.html
     torch.save(model.cpu().state_dict(), path)
@@ -159,7 +159,6 @@ if __name__ == "__main__":
     # Data, model, and output directories These are required.
     parser.add_argument('--model-dir', type=str, default=os.environ['SM_MODEL_DIR'])
     parser.add_argument('--data-dir', type=str, default=os.environ['SM_CHANNEL_TRAINING'])
-#     parser.add_argument('--test-data', type=str, default=os.environ['SM_CHANNEL_TEST'])
     parser.add_argument('--training-env', type=str, default=json.loads(os.environ['SM_TRAINING_ENV']))
     parser.add_argument('--region-name', type=str, default='us-east-1')
     
@@ -172,16 +171,16 @@ if __name__ == "__main__":
     study = optuna.study.load_study(study_name=args.study_name, storage=db)
     study.optimize(objective, n_trials=args.n_trials)
 
-    print("Number of finished trials: ", len(study.trials))
+    logger.info("Number of finished trials: ", len(study.trials))
 
-    print("Best trial:")
+    logger.info("Best trial:")
     trial = study.best_trial
 
-    print("  Value: ", trial.value)
+    logger.info("  Value: ", trial.value)
 
-    print("  Params: ")
+    logger.info("  Params: ")
     for key, value in trial.params.items():
-        print("    {}: {}".format(key, value))
+        logger.info("    {}: {}".format(key, value))
         
     # retrieve and save the best model
     from optuna.trial import FixedTrial
@@ -193,6 +192,6 @@ if __name__ == "__main__":
         path = os.path.join(args.model_dir, 'model.pth')
         torch.save(model.cpu().state_dict(), path)
         torch.save(trial.params, os.path.join(args.model_dir, 'params.pth'))
-        print('    Model saved:', 'model_{}.npz'.format(trial.number))
+        logger.info('    Model saved:', 'model_{}.npz'.format(trial.number))
     except Exception as e: 
-        print('    Save failed:', e)
+        logger.info('    Save failed:', e)
