@@ -149,18 +149,18 @@ def save_model(model, model_dir, trial_number):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
-    # for HPO
+    # To configure Optuna db
     parser.add_argument('--host', type=str)
     parser.add_argument('--db-name', type=str, default='optuna')
     parser.add_argument('--db-secret', type=str, default='demo/optuna/db')
     parser.add_argument('--study-name', type=str, default='chainer-simple')
-    parser.add_argument('--n-trials', type=int, default=10)
+    parser.add_argument('--region-name', type=str, default='us-east-1')
+    parser.add_argument('--n-trials', type=int, default=100)
     
     # Data, model, and output directories These are required.
     parser.add_argument('--model-dir', type=str, default=os.environ['SM_MODEL_DIR'])
     parser.add_argument('--data-dir', type=str, default=os.environ['SM_CHANNEL_TRAINING'])
     parser.add_argument('--training-env', type=str, default=json.loads(os.environ['SM_TRAINING_ENV']))
-    parser.add_argument('--region-name', type=str, default='us-east-1')
     
     args, _ = parser.parse_known_args()    
 
@@ -176,7 +176,7 @@ if __name__ == "__main__":
     logger.info("Best trial:")
     trial = study.best_trial
 
-    logger.info("  Value: ", trial.value)
+    logger.info("  Value: {}".format(trial.value))
 
     logger.info("  Params: ")
     for key, value in trial.params.items():
@@ -192,6 +192,6 @@ if __name__ == "__main__":
         path = os.path.join(args.model_dir, 'model.pth')
         torch.save(model.cpu().state_dict(), path)
         torch.save(trial.params, os.path.join(args.model_dir, 'params.pth'))
-        logger.info('    Model saved:', 'model_{}.npz'.format(trial.number))
+        logger.info('    Model saved: model_{}.npz'.format(trial.number))
     except Exception as e: 
-        logger.info('    Save failed:', e)
+        logger.info('    Save failed: {}'.format(e))
