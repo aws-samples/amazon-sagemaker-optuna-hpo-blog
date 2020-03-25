@@ -27,6 +27,7 @@ import sys
 from secrets import get_secret
 
 import optuna
+from optuna.trial import FixedTrial
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 BATCHSIZE = 128
@@ -132,7 +133,6 @@ def objective(trial):
     return accuracy
 
 def model_fn(model_dir):
-    from optuna.trial import FixedTrial
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     params = torch.load(os.path.join(model_dir, 'params.pth'))
     model = define_model(FixedTrial(params)).to(device)
@@ -183,14 +183,12 @@ if __name__ == "__main__":
         logger.info("    {}: {}".format(key, value))
         
     # retrieve and save the best model
-    from optuna.trial import FixedTrial
     try:
         model = define_model(FixedTrial(trial.params)).to(DEVICE)
         with open(os.path.join('/tmp', 'model_{}.pth'.format(trial.number)), 'rb') as f:
             model.load_state_dict(torch.load(f))
             
-        path = os.path.join(args.model_dir, 'model.pth')
-        torch.save(model.cpu().state_dict(), path)
+        torch.save(model.cpu().state_dict(), os.path.join(args.model_dir, 'model.pth'))
         torch.save(trial.params, os.path.join(args.model_dir, 'params.pth'))
         logger.info('    Model saved: model_{}.npz'.format(trial.number))
     except Exception as e: 
