@@ -164,7 +164,7 @@ if __name__ == "__main__":
     args, _ = parser.parse_known_args()    
 
     secret = get_secret(args.db_secret, args.region_name)
-    connector = 'mysqlconnector'
+    connector = 'pymysql'
     db = 'mysql+{}://{}:{}@{}/{}'.format(connector, secret['username'], secret['password'], args.host, args.db_name)
 
     study = optuna.study.load_study(study_name=args.study_name, storage=db)
