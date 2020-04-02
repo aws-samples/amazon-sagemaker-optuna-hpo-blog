@@ -128,7 +128,6 @@ def objective(trial):
 
     accuracy = correct / N_TEST_EXAMPLES
     
-    trial.set_user_attr('accuracy', accuracy)
     trial.set_user_attr('job_name', args.training_env['job_name'])
     return accuracy
 
