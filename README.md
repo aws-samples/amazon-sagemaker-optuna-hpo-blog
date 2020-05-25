@@ -8,7 +8,7 @@ You can set up the environment depicted below with the [CloudFormation template]
 
 <div align="center"><img src="images/optuna-architecture.png" width="480"/></div>
 
-Then clone this repository and try examples in the `examples/` directory. The blog post is basically structured to demonstrate the `examples/chainer_simple/`.
+Then clone this repository and try examples in the `examples/` directory. The blog post is basically structured to demonstrate the `examples/pytorch_simple/`.
 
 ## License Summary
 
