@@ -19,11 +19,14 @@ Parameters:
   DBInstanceType:
     Description: 'The type of RDS/Aurora instance to be provisioned. '
     Type: String
-    Default: db.r4.large
+    Default: db.r5.large
     AllowedValues:
-      - db.r4.large
-      - db.r4.xlarge
-      - db.r4.2xlarge
+      - db.t3.small
+      - db.t3.medium
+      - db.r5.large
+      - db.r5.xlarge
+      - db.r5.2xlarge
+
   DBPort:
     Description: 'The RDS/Aurora port.'
     Type: Number
@@ -35,7 +38,7 @@ Parameters:
   SageMakerInstanceType:
     Description: 'The type of SageMaker notebook to be provisioned. '
     Type: String
-    Default: ml.t2.medium
+    Default: ml.t3.medium
     AllowedValues:
       - ml.t2.medium
       - ml.t3.medium
