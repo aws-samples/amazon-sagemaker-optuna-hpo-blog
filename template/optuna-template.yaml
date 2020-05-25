@@ -35,7 +35,7 @@ Parameters:
   SageMakerInstanceType:
     Description: 'The type of SageMaker notebook to be provisioned. '
     Type: String
-    Default: ml.t2.medium
+    Default: ml.t3.medium
     AllowedValues:
       - ml.t2.medium
       - ml.t3.medium
