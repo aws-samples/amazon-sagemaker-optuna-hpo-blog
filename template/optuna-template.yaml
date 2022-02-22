@@ -11,18 +11,23 @@ Parameters:
     AllowedPattern: '([a-z]|[0-9])+'
   DBEngine:
     Type: String
-    Default: aurora
+    Default: aurora-mysql
     AllowedValues:
-      - aurora        # compatible with MySQL 5.6
       - aurora-mysql  # compatible with MySQL 5.7
       - aurora-postgresql
   DBInstanceType:
     Description: 'The type of RDS/Aurora instance to be provisioned. '
     Type: String
-    Default: db.r5.large
+    Default: db.t4g.medium
     AllowedValues:
+      - db.t4g.medium
+      - db.t4g.large
       - db.t3.small
       - db.t3.medium
+      - db.t3.large
+      - db.r6g.large
+      - db.r6g.xlarge
+      - db.r6g.2xlarge
       - db.r5.large
       - db.r5.xlarge
       - db.r5.2xlarge
