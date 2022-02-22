@@ -378,7 +378,6 @@ Resources:
   #This is a Secret resource with a randomly generated password in its SecretString JSON.
   DBSecret:
     Type: AWS::SecretsManager::Secret
-    NoEcho: 'true'
     Properties:
       Name: 'demo/optuna/db'
       Description: 'This is the secret for your RDS/Aurora instance'
