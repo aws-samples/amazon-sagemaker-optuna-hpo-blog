@@ -31,11 +31,6 @@ Parameters:
       - db.r5.large
       - db.r5.xlarge
       - db.r5.2xlarge
-
-  DBPort:
-    Description: 'The RDS/Aurora port.'
-    Type: Number
-    Default: 3306
   SageMakerInstanceName:
     Description: 'Name for the SageMaker notebook. '
     Default: optuna-notebook
@@ -93,14 +88,18 @@ Parameters:
       second Availability Zone
     Type: String
     Default: 10.0.3.0/24
+    
 Mappings:
-  DBParameterGroupMap:
-    aurora:
-      DefaultParameterGroup: 'aurora5.6'
+  DBEngineMap:
     aurora-mysql:
+      EngineVersion: '5.7.mysql_aurora.2.10.2'
       DefaultParameterGroup: 'aurora-mysql5.7'
+      Port: 3306
     aurora-postgresql:
+      EngineVersion: '13.4'
       DefaultParameterGroup: 'aurora-postgresql10'
+      Port: 5432
+      
 Resources:
   VPC:
     Type: 'AWS::EC2::VPC'
@@ -311,10 +310,15 @@ Resources:
     Metadata:
       'AWS::CloudFormation::Designer':
         id: a3f7896e-c62e-4ca9-ba10-0fbe25922957
+        
   DBCluster:
     Type: 'AWS::RDS::DBCluster'
     Properties:
       Engine: !Ref DBEngine
+      EngineVersion: !FindInMap
+        - DBEngineMap
+        - !Ref DBEngine
+        - EngineVersion
       DBClusterParameterGroupName: !Ref DBClusterParameterGroup
       MasterUsername: !Join ['', ['{{resolve:secretsmanager:', !Ref DBSecret, ':SecretString:username}}' ]]
       MasterUserPassword: !Join ['', ['{{resolve:secretsmanager:', !Ref DBSecret, ':SecretString:password}}' ]]
@@ -323,7 +327,7 @@ Resources:
       DBSubnetGroupName: !Ref DBSubnetGroup
       VpcSecurityGroupIds:
         - !GetAtt RDSSecurityGroup.GroupId
-      Port: !Ref DBPort
+      Port: !FindInMap [DBEngineMap, !Ref DBEngine, Port]
     Metadata:
       'AWS::CloudFormation::Designer':
         id: d6d32d98-5b8d-4f96-a3f6-d653dd66336b
@@ -349,7 +353,7 @@ Resources:
     Properties:
       Description: DB Cluster Parameter Group for Aurora Cluster
       Family: !FindInMap
-        - DBParameterGroupMap
+        - DBEngineMap
         - !Ref DBEngine
         - DefaultParameterGroup
       Parameters:
@@ -359,7 +363,7 @@ Resources:
     Properties:
       Description: DB Parameter Group for Aurora
       Family: !FindInMap
-        - DBParameterGroupMap
+        - DBEngineMap
         - !Ref DBEngine
         - DefaultParameterGroup
   RDSSecurityGroup:
@@ -368,8 +372,8 @@ Resources:
       GroupDescription: RDS security group
       SecurityGroupIngress:
         - SourceSecurityGroupId: !Ref SageMakerSecurityGroup
-          FromPort: !Ref DBPort
-          ToPort: !Ref DBPort
+          FromPort: !FindInMap [DBEngineMap, !Ref DBEngine, Port]
+          ToPort: !FindInMap [DBEngineMap, !Ref DBEngine, Port]
           IpProtocol: tcp
       VpcId: !Ref VPC
     Metadata:
@@ -386,6 +390,7 @@ Resources:
         GenerateStringKey: 'password'
         PasswordLength: 16
         ExcludeCharacters: '"@/\{}'
+        
   NotebookInstance:
     Type: 'AWS::SageMaker::NotebookInstance'
     Properties:
@@ -440,6 +445,7 @@ Resources:
       NotebookInstanceLifecycleConfigName: clone-optuna-sample-repository
       OnCreate:
         - Content: IyEvYmluL2Jhc2gKc3VkbyAtdSBlYzItdXNlciAtaSA8PCdFT0YnCmNkIC9ob21lL2VjMi11c2VyL1NhZ2VNYWtlciAmJiBnaXQgY2xvbmUgaHR0cHM6Ly9naXRodWIuY29tL2F3cy1zYW1wbGVzL2FtYXpvbi1zYWdlbWFrZXItb3B0dW5hLWhwby1ibG9nLmdpdApFT0Y=
+
 Outputs:
   VPC:
     Description: A reference to the created VPC
